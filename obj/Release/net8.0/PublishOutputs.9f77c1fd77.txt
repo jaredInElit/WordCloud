@@ -1,0 +1,13 @@
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\WordCloud.exe
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\appsettings.Development.json
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\appsettings.json
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\WordCloud.dll
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\WordCloud.deps.json
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\WordCloud.runtimeconfig.json
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\WordCloud.pdb
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\KnowledgePicker.WordCloud.dll
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\SkiaSharp.dll
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\runtimes\osx\native\libSkiaSharp.dylib
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\runtimes\win-arm64\native\libSkiaSharp.dll
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\runtimes\win-x64\native\libSkiaSharp.dll
+C:\Users\jboschmann\Documents\Code Projects\WordCloud\WordCloud\bin\Release\net8.0\publish\runtimes\win-x86\native\libSkiaSharp.dll

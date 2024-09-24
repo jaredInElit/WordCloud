@@ -1,0 +1,47 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Word Cloud</title>
+</head>
+<body>
+<h1>Word Cloud</h1>
+<input type="text" id="wordInput" placeholder="Enter a word">
+<button onclick="addWord()">Add Word</button>
+<h2>Current Word Cloud</h2>
+<ul id="wordList"></ul>
+
+<script>
+    async function addWord() {
+        const word = document.getElementById('wordInput').value;
+        if (word) {
+            const response = await fetch('/api/word/add', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(word)
+            });
+            document.getElementById('wordInput').value = '';
+            fetchWordCloud();
+        }
+    }
+
+    async function fetchWordCloud() {
+        const response = await fetch('/api/wordcloud');
+        const wordCloud = await response.json();
+        const wordList = document.getElementById('wordList');
+        wordList.innerHTML = '';
+        wordCloud.forEach(word => {
+            const li = document.createElement('li');
+            li.innerText = `${word.key}: ${word.value}`;
+            wordList.appendChild(li);
+        });
+    }
+
+    
+    window.onload = fetchWordCloud;
+</script>
+</body>
+</html>
