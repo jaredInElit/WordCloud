@@ -4,10 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Kochava CSM WordCloud</title>
-   
+
     <link href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css" rel="stylesheet" />
     <style>
-        
         #kochava-logo {
             max-width: 150px;
             margin-bottom: 20px;
@@ -25,18 +24,14 @@
 </head>
 <body>
 
-
 <div class="container">
     <div class="row justify-content-center">
         <div class="col-md-8 text-center">
-            
-            <img src="/images/kochava-logo.png" alt="Kochava Logo" id="kochava-logo" />
             <h1>CSM WordCloud</h1>
             <p>Anyone with this URL can enter words to generate a unique word cloud. You can also download or reset the word cloud below.</p>
         </div>
     </div>
 </div>
-
 
 <div class="container" id="form-container">
     <div class="row justify-content-center">
@@ -51,7 +46,6 @@
     </div>
 </div>
 
-
 <div class="container" id="word-cloud-container">
     <div class="row justify-content-center">
         <div class="col-md-6">
@@ -64,17 +58,12 @@
     </div>
 </div>
 
-
-<footer class="text-center">
-    <p>&copy; 2024 CSM WordCloud</p>
-</footer>
-
-
 <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@4.5.2/dist/js/bootstrap.bundle.min.js"></script>
 
 <script>
-    
+    let eventListenersAttached = false;
+
     async function addWordToCloud(event) {
         event.preventDefault();
         const word = document.getElementById('wordInput').value;
@@ -90,47 +79,78 @@
             const result = await response.json();
             if (response.ok) {
                 document.getElementById('statusMessage').textContent = `Word '${result.word}' added successfully.`;
-                document.getElementById('wordInput').value = ''; // Clear the input
-                fetchWordCloud(); // Refresh the word cloud image
+                document.getElementById('wordInput').value = '';
+                fetchWordCloud();
             } else {
                 document.getElementById('statusMessage').textContent = `Error: ${result.message}`;
             }
         }
     }
 
-   
     function fetchWordCloud() {
         const wordCloudImage = document.querySelector('img[alt="Word Cloud Image"]');
-        wordCloudImage.src = `/api/word/generate-wordcloud?${new Date().getTime()}`;  // Add a timestamp to force refresh
+        wordCloudImage.src = `/api/word/generate-wordcloud?${new Date().getTime()}`;
+
+        wordCloudImage.onload = () => {
+            console.log('Word cloud image loaded');
+            attachEventListeners();
+        };
     }
 
-    
-    document.getElementById('wordForm').addEventListener('submit', addWordToCloud);
+    function attachEventListeners() {
+        if (eventListenersAttached) return;
 
-    
-    document.getElementById('downloadButton').addEventListener('click', function () {
-        const link = document.createElement('a');
-        link.href = '/api/word/generate-wordcloud';  
-        link.download = 'wordcloud.png';  
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
-    });
-
-    
-    document.getElementById('resetButton').addEventListener('click', async function () {
-        const response = await fetch('/api/word/reset-wordcloud', {
-            method: 'POST'
+        document.getElementById('downloadButton').addEventListener('click', function () {
+            console.log('Download button clicked');
+            const link = document.createElement('a');
+            link.href = '/api/word/generate-wordcloud';
+            link.download = 'wordcloud.png';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
+            console.log('Download link triggered');
         });
 
-        if (response.ok) {
-            document.getElementById('statusMessage').textContent = 'Word cloud has been reset.';
-            fetchWordCloud();
-        } else {
-            document.getElementById('statusMessage').textContent = 'Error resetting word cloud.';
-        }
+        document.getElementById('resetButton').addEventListener('click', async function () {
+            console.log('Reset button clicked');
+            const response = await fetch('/api/word/reset-wordcloud', {
+                method: 'POST'
+            });
+
+            if (response.ok) {
+                document.getElementById('statusMessage').textContent = 'Word cloud has been reset.';
+                fetchWordCloud();
+            } else {
+                document.getElementById('statusMessage').textContent = 'Error resetting word cloud.';
+            }
+        });
+
+        document.getElementById('wordForm').addEventListener('submit', addWordToCloud);
+
+        eventListenersAttached = true;
+    }
+
+    fetchWordCloud();
+
+</script>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/microsoft-signalr/6.0.0/signalr.min.js"></script>
+
+<script>
+    const connection = new signalR.HubConnectionBuilder()
+        .withUrl("/wordcloudHub")
+        .build();
+
+    connection.start().then(() => {
+        console.log("SignalR connection established");
+    }).catch(err => console.error(err));
+
+    connection.on("ReceiveWordCloudUpdate", () => {
+        console.log("Received WordCloud update from SignalR");
+        fetchWordCloud();
     });
 </script>
+
 
 </body>
 </html>

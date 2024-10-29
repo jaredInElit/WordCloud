@@ -9,13 +9,22 @@
       "sslPort": 44305,
       "applicationUrl": "http://localhost:5065;https://localhost:44305"
     },
-    "YourAppName": {
+    "YourAppNameDev": {
       "commandName": "Project",
       "dotnetRunMessages": true,
       "launchBrowser": true,
-      "applicationUrl": "http://localhost:5065;https://localhost:5001", 
+      "applicationUrl": "http://localhost:5065;https://localhost:5001",
       "environmentVariables": {
         "ASPNETCORE_ENVIRONMENT": "Development"
+      }
+    },
+    "YourAppNameProd": {
+      "commandName": "Project",
+      "dotnetRunMessages": true,
+      "launchBrowser": true,
+      "applicationUrl": "http://localhost:5000",
+      "environmentVariables": {
+        "ASPNETCORE_ENVIRONMENT": "Production"
       }
     }
   }

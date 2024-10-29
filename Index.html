@@ -4,9 +4,13 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Word Cloud</title>
+    <link rel="stylesheet" href="css/site.css"> <!-- Link to CSS if exists -->
 </head>
 <body>
-<h1>Word Cloud</h1>
+
+<h1>CSM WordCloud</h1>
+<p>Anyone with this URL can enter words to generate a unique word cloud. You can also download or reset the word cloud below.</p>
+<h2>Add a Word</h2>
 <input type="text" id="wordInput" placeholder="Enter a word">
 <button onclick="addWord()">Add Word</button>
 <h2>Current Word Cloud</h2>
@@ -16,32 +20,52 @@
     async function addWord() {
         const word = document.getElementById('wordInput').value;
         if (word) {
-            const response = await fetch('/api/word/add', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(word)
-            });
-            document.getElementById('wordInput').value = '';
-            fetchWordCloud();
+            try {
+                const response = await fetch('/api/Word/add-word', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(word)
+                });
+
+                if (response.ok) {
+                    document.getElementById('wordInput').value = '';
+                    fetchWordCloud();
+                } else {
+                    console.error('Failed to add word');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        } else {
+            alert('Please enter a word.');
         }
     }
 
     async function fetchWordCloud() {
-        const response = await fetch('/api/wordcloud');
-        const wordCloud = await response.json();
-        const wordList = document.getElementById('wordList');
-        wordList.innerHTML = '';
-        wordCloud.forEach(word => {
-            const li = document.createElement('li');
-            li.innerText = `${word.key}: ${word.value}`;
-            wordList.appendChild(li);
-        });
+        try {
+            const response = await fetch('/api/Word/generate-wordcloud');
+            if (response.ok) {
+                const wordCloud = await response.json();
+                const wordList = document.getElementById('wordList');
+                wordList.innerHTML = '';
+                wordCloud.words.forEach(wordEntry => {
+                    const li = document.createElement('li');
+                    li.innerText = `${wordEntry.word}: ${wordEntry.frequency}`;
+                    wordList.appendChild(li);
+                });
+            } else {
+                console.error('Failed to fetch word cloud');
+            }
+        } catch (error) {
+            console.error('Error:', error);
+        }
     }
 
-    
     window.onload = fetchWordCloud;
 </script>
 </body>
 </html>
+
+

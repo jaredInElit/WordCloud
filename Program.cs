@@ -1,45 +1,57 @@
+using WordCloud.Hubs;
+using WordCloud.Services.Implementations;
+using WordCloud.Services.Interfaces;
+
 var builder = WebApplication.CreateBuilder(args);
 
-
+// Add services to the container.
 builder.Services.AddControllersWithViews();
-builder.Services.AddControllers();
 
+// Add SignalR services
+builder.Services.AddSignalR();
 
+// Optional: Add CORS if needed
 builder.Services.AddCors(options =>
 {
-    options.AddPolicy("AllowAllOrigins", policy =>
+    options.AddDefaultPolicy(builder =>
     {
-        policy.AllowAnyOrigin()
-            .AllowAnyHeader()
-            .AllowAnyMethod();
+        builder.AllowAnyOrigin()
+            .AllowAnyMethod()
+            .AllowAnyHeader();
     });
 });
 
+// Register application services
+builder.Services.AddScoped<IWordCloudService, WordCloudService>();
+
+// Configure logging
+builder.Logging.ClearProviders();
+builder.Logging.AddConsole();
+
 var app = builder.Build();
 
+// Ensure UseRouting is called before UseEndpoints
+app.UseRouting();
 
-if (!app.Environment.IsDevelopment())
-{
-    app.UseExceptionHandler("/Home/Error");
-    app.UseHsts(); 
-}
+// Configure CORS (optional, if using CORS)
+app.UseCors();
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
 
-app.UseRouting();
-
-
-app.UseCors("AllowAllOrigins");
-
 app.UseAuthorization();
 
+// Map routes and SignalR hub after UseRouting
+app.UseEndpoints(endpoints =>
+{
+    // Map the SignalR hub
+    endpoints.MapHub<WordCloudHub>("/wordcloudHub");
 
-app.MapControllerRoute(
-    name: "default",
-    pattern: "{controller=WordView}/{action=WordCloud}/{id?}");
+    // Default controller route
+    app.MapControllerRoute(
+        name: "default",
+        pattern: "{controller=WordView}/{action=WordCloud}/{id?}");
 
-
-app.MapControllers(); 
+});
 
 app.Run();
