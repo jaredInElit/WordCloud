@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Collections.Generic;
 using SkiaSharp;
 using WordCloud.Primitives;
 
@@ -8,8 +9,10 @@ namespace WordCloud.Layouts
     {
         private readonly double centerX;
         private readonly double centerY;
-        private const double StepAlpha = Math.PI / 60;
-        private const int MaxPoints = 500;
+        private const double StepAlpha = Math.PI / 60;  // Spiral step size (angle increment)
+        private const int MaxPoints = 1000;  // Maximum number of points to check along the spiral
+
+        private readonly List<SKRect> placedRectangles = new List<SKRect>();
 
         public SpiralLayout(double width, double height)
         {
@@ -17,20 +20,49 @@ namespace WordCloud.Layouts
             centerY = height / 2;
         }
 
-        public bool TryFindFreePosition(double wordWidth, double wordHeight, out SKPoint location)
+
+        public bool TryFindFreePosition(double wordWidth, double wordHeight, out SKRect foundRectangle)
         {
-            location = new SKPoint();
+            foundRectangle = SKRect.Empty;
             double alpha = 0;
+            const double SpiralStep = 5;
 
             for (int i = 0; i < MaxPoints; i++)
             {
-                double dX = (i / (double)MaxPoints) * Math.Sin(alpha) * centerX;
-                double dY = (i / (double)MaxPoints) * Math.Cos(alpha) * centerY;
+                double dX = SpiralStep * i * Math.Sin(alpha);
+                double dY = SpiralStep * i * Math.Cos(alpha);
 
-                location = new SKPoint((float)(centerX + dX - wordWidth / 2), (float)(centerY + dY - wordHeight / 2));
-                return true; // Replace with collision detection logic in the full implementation
+                var proposedRectangle = new SKRect(
+                    (float)(centerX + dX - wordWidth / 2),
+                    (float)(centerY + dY - wordHeight / 2),
+                    (float)(centerX + dX + wordWidth / 2),
+                    (float)(centerY + dY + wordHeight / 2));
+
+
+                if (!IsColliding(proposedRectangle))
+                {
+                    foundRectangle = proposedRectangle;
+                    placedRectangles.Add(proposedRectangle);
+                    return true;
+                }
+
+
+                alpha += StepAlpha;
             }
 
+            return false;
+        }
+
+
+        private bool IsColliding(SKRect proposedRectangle)
+        {
+            foreach (var rect in placedRectangles)
+            {
+                if (rect.IntersectsWith(proposedRectangle))
+                {
+                    return true;
+                }
+            }
             return false;
         }
     }

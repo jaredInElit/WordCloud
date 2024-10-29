@@ -31,16 +31,18 @@ namespace WordCloud
             foreach (var entry in entries)
             {
                 var fontSize = sizer.GetFontSize(entry, maxFrequency, minFontSize, maxFontSize);
-                double wordWidth = fontSize * entry.Word.Length * 0.6;
-                double wordHeight = fontSize;
+                double wordWidth = fontSize * entry.Word.Length * 0.6; // Approximate word width
+                double wordHeight = fontSize; // Approximate word height
 
-                if (layout.TryFindFreePosition(wordWidth, wordHeight, out SKPoint location))
+                // Adjusting to use SKRect instead of SKPoint
+                if (layout.TryFindFreePosition(wordWidth, wordHeight, out SKRect foundRect))
                 {
                     var item = new LayoutItem
                     {
                         Entry = entry,
                         FontSize = fontSize,
-                        Location = location
+                        Location = new SKPoint(foundRect.Left, foundRect.Top),
+                        Measured = foundRect
                     };
 
                     drawer.DrawWord(item);
